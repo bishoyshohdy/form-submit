@@ -1,10 +1,8 @@
 import React, { useState, useEffect  } from 'react';
 import {
-  Progress,
   Box,
   ButtonGroup,
   Button,
-  Heading,
   Flex,
   FormControl,
   FormLabel,
@@ -27,15 +25,10 @@ import { useToast } from '@chakra-ui/react';
 const handleFileUpload = (event) => {
   const fileUploaded = event.target.files[0];
   console.log(fileUploaded);
-  
 }
 
 const ApplicationForm = () => {
-  const [show, setShow] = useState(false);
-  const handleClick = () => setShow(!show);
   const toast = useToast();
-  const [step, setStep] = useState(1);
-  const [progress, setProgress] = useState(20);
 
   const [formData, setFormData] = useState({
     step1: {
@@ -68,26 +61,15 @@ const ApplicationForm = () => {
 
   });
 
-  const [formValid, setFormValid] = useState({
-    step1: false,
-    step2: false,
-    step3: false,
-    step4: false,
-    step5: false,
-  });
+
 
 const handleNextStep = () => {
-  if (formValid[`step${step}`]) {
-    setStep(step + 1);
-    setProgress(progress + 20);
-    setActiveStep(step+1);
-
-  }
+    setActiveStep(activeStep + 1);
 };
 
 
 const loadPreviousStepData = () => {
-  if (step === 2) {
+  if (activeStep === 2) {
     const { companyName, companyDescription, teamMembers } = formData.step1;
     setFormData({
       ...formData,
@@ -97,7 +79,7 @@ const loadPreviousStepData = () => {
         teamMembers,
       },
     });
-  } else if (step === 3) {
+  } else if (activeStep === 3) {
     const { problem, solution, targetMarket, businessModel } = formData.step2;
     setFormData({
       ...formData,
@@ -108,7 +90,7 @@ const loadPreviousStepData = () => {
         businessModel,
       },
     });
-  } else if (step === 4) {
+  } else if (activeStep === 4) {
     const { stageOfDevelopment } = formData.step3;
     setFormData({
       ...formData,
@@ -116,7 +98,7 @@ const loadPreviousStepData = () => {
         stageOfDevelopment,
       },
     });
-  } else if (step === 5) {
+  } else if (activeStep === 5) {
     const {
       pitchDeckLink,
       businessPlanLink,
@@ -132,7 +114,7 @@ const loadPreviousStepData = () => {
         competitiveLandscapeDescription,
       },
     });
-  } else if (step === 6) {
+  } else if (activeStep === 6) {
     const { website, socialMediaLinks, videoPitchLink } = formData.step5;
     setFormData({
       ...formData,
@@ -148,19 +130,13 @@ const loadPreviousStepData = () => {
 
 
 const handleBackStep = () => {
-  if (step > 1) {
+  if (activeStep > 0) {
     loadPreviousStepData(); 
-    setStep(step - 1);
-    setProgress(progress - 20);
-    setActiveStep(step -1);
+    setActiveStep(activeStep -1);
   }
 };
 
-
-
-
   const handleSubmit = () => {
-    if (validateStep(step)) {
       toast({
         title: 'Application submitted.',
         description: 'Your application has been submitted successfully.',
@@ -168,16 +144,10 @@ const handleBackStep = () => {
         duration: 3000,
         isClosable: true,
       });
-    }
+
   };
 
-  const validateStep = (step) => {
-    const currentStepData = formData[`step${step}`];
-    const isStepValid = Object.values(currentStepData).every(
-      (value) => value !== ''
-    );
-    setFormValid({ ...formValid, [`step${step}`]: isStepValid });
-  };
+
 
   const handleFormChange = (step, field, value) => {
     setFormData({
@@ -189,19 +159,9 @@ const handleBackStep = () => {
     });
       };
 
-  const validateCurrentStep = () => {
-  const currentStepData = formData[`step${step}`];
-  const isStepValid = Object.values(currentStepData).every(
-    (value) => value !== '' || value !== 0
-  );
-  setFormValid({ ...formValid, [`step${step}`]: isStepValid });
 
-};
 
     
-  useEffect(() => {
-    validateCurrentStep();
-  }, [formData, step]);
 
   const steps = [
   { title: 'First', description: 'Company Information' },
@@ -212,8 +172,8 @@ const handleBackStep = () => {
 ]
 
    const { activeStep, setActiveStep  } = useSteps({
-    index: 1,
-    count: steps.length,
+    initialStep: 0,
+    steps: 4,
   });
 
   return (
@@ -227,7 +187,12 @@ const handleBackStep = () => {
       as="form"
       mx="5%"
       my="5%"
-    >
+      h={'75vh'}
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'space-between'}
+      >
+         
 
     <Stepper index={activeStep} my={4}>
           {steps.map((step, index) => (
@@ -250,8 +215,8 @@ const handleBackStep = () => {
           ))}
         </Stepper>
 
-      <Box maxH={'60vh'} overflowY={'scroll'} px={4}>
-        {step === 1 ? (
+      <Box maxH={"50vh"} overflowY={'scroll'} px={4}>
+        {activeStep === 0 ? (
           <Form1
             data={formData.step1}
             onChange={(field, value) =>
@@ -259,21 +224,21 @@ const handleBackStep = () => {
             }
 
           />
-        ) : step === 2 ? (
+        ) : activeStep === 1 ? (
           <Form2
             data={formData.step2}
             onChange={(field, value) =>
               handleFormChange('step2', field, value)
             }
           />
-        ) : step === 3 ? (
+        ) : activeStep === 2 ? (
           <Form3 
             data={formData.step3}
             onChange={(field, value) =>
               handleFormChange('step3', field, value)
             }
             />
-        ) : step === 4 ? (
+        ) : activeStep === 3 ? (
           <Form4  
             data={formData.step4}
             onChange={(field, value) =>
@@ -290,12 +255,12 @@ const handleBackStep = () => {
         )}
       </Box>
 
-      <ButtonGroup mt="5%" w="100%">
+      <ButtonGroup mt="5%" w="100%" >
         <Flex w="100%" justifyContent="space-between">
           <Flex>
             <Button
               onClick={handleBackStep}
-              isDisabled={step === 1}
+              isDisabled={activeStep === 0}
               colorScheme="blue"
               variant="solid"
               w="7rem"
@@ -305,7 +270,7 @@ const handleBackStep = () => {
             </Button>
             <Button
               w="7rem"
-              isDisabled={step === 5 || !formValid[`step${step}`]}
+              isDisabled={activeStep === 4}
               onClick={handleNextStep}
               colorScheme="blue"
               variant="outline"
@@ -313,19 +278,22 @@ const handleBackStep = () => {
               Next
             </Button>
           </Flex>
-          {step === 5 ? (
+          {activeStep === 4 ? (
             <Button
               w="7rem"
               colorScheme="red"
               variant="solid"
               onClick={handleSubmit}
-              isDisabled={!formValid[`step${step}`]}
+              isDisabled={activeStep !== 5}
             >
               Submit
             </Button>
           ) : null}
         </Flex>
       </ButtonGroup>
+
+      
+
     </Box>
   );
 };
@@ -359,7 +327,7 @@ const Form1 = ({ data, onChange }) => {
 
   return (
     <>
-      <FormControl isRequired>
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="company-name" fontWeight={'normal'}>
           Company Name
         </FormLabel>
