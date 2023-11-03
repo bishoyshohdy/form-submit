@@ -26,14 +26,24 @@ import { useToast } from '@chakra-ui/react';
 
 // const [selectedFile, setSelectedFile] = useState(null);
 
-// const handleFileUpload = (event) => {
-//   const fileUploaded = event.target.files[0];
-//   setSelectedFile(fileUploaded);
+const handleFileUpload = (event) => {
+  const fileUploaded = event.target.files[0];
+  // setSelectedFile(fileUploaded);
 
-//   console.log(fileUploaded);
-// }
+  console.log(fileUploaded);
+}
 
-const ApplicationForm = () => {
+
+
+
+function ApplicationForm()  {
+  const [selectedFile, setSelectedFile] = useState(null); // Define selectedFile state here
+
+  const handleFileUpload = (event) => {
+    const fileUploaded = event.target.files[0];
+    setSelectedFile(fileUploaded);
+    console.log(fileUploaded);
+  };
   const toast = useToast();
 
   const [formData, setFormData] = useState({
@@ -76,6 +86,7 @@ const handleNextStep = () => {
 
 
 const loadPreviousStepData = () => {
+
   if (activeStep === 2) {
     
     const { companyName, companyDescription, teamMembers } = formData.step1;
@@ -175,6 +186,44 @@ const handleSubmit = () => {
   });
 
 };
+
+
+// const handleSubmit = () => {
+//   const formData = new FormData();
+//   // formData.append('technology', selectedFile);
+//   formData.append('step1', JSON.stringify(formData.step1));
+//   formData.append('step2', JSON.stringify(formData.step2));
+//   formData.append('step3', JSON.stringify(formData.step3));
+//   formData.append('step4', JSON.stringify(formData.step4));
+//   formData.append('step5', JSON.stringify(formData.step5));
+
+//   axios
+//     .post('http://localhost:3000/users', formData)
+//     .then((response) => {
+//       if (response.data && typeof response.data === 'object') {
+//         const transformedData = {
+//           // companyName: response.data.companyName,
+//         };
+
+//         // console.log('Transformed Data:', transformedData);
+
+//         toast({
+//           title: 'Application submitted.',
+//           description: 'Your application has been submitted successfully.',
+//           status: 'success',
+//           duration: 3000,
+//           isClosable: true,
+//         });
+//       } else {
+//         console.error('Error: Response data structure is not as expected');
+//       }
+//     })
+//     .catch((error) => {
+//       console.error('Error:', error);
+//     });
+// };
+
+
 
 
 
@@ -416,14 +465,15 @@ const Form1 = ({ data, onChange }) => {
         </HStack>
     );
   }
-  const [selectedFile, setSelectedFile] = useState(null);
+//   const [selectedFile, setSelectedFile] = useState(null);
 
-const handleFileUpload = (event) => {
-  const fileUploaded = event.target.files[0];
-  setSelectedFile(fileUploaded);
+// const handleFileUpload = (event) => {
+//   const fileUploaded = event.target.files[0];
+//   setSelectedFile(fileUploaded);
+  
 
-  console.log(fileUploaded);
-}
+//   console.log(fileUploaded);
+// }
 
   return (
     <>
@@ -473,12 +523,31 @@ const handleFileUpload = (event) => {
 const Form2 = ({ data, onChange }) => {
   const [selectedFile, setSelectedFile] = useState(null);
 
-const handleFileUpload = (event) => {
-  const fileUploaded = event.target.files[0];
-  setSelectedFile(fileUploaded);
+  const handleFileUpload = (event) => {
+    const fileUploaded = event.target.files[0];
+    setSelectedFile(fileUploaded);
+  
+    console.log(fileUploaded);
+  }
+  const upload = () => {
+    const formData = new FormData();
+    formData.append('businessModel', selectedFile); // Append the selected file
+    // formData.append('step1', JSON.stringify(formData.step1));
+    // formData.append('step2', JSON.stringify(formData.step2));
+    // formData.append('step3', JSON.stringify(formData.step3));
+    // formData.append('step4', JSON.stringify(formData.step4));
+    // formData.append('step5', JSON.stringify(formData.step5));
+  
+    axios
+      .post('http://localhost:3000/uploads', formData)
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
 
-  console.log(fileUploaded);
-}
   return (
     <>
       <FormControl mt="2%">
@@ -517,12 +586,15 @@ const handleFileUpload = (event) => {
         </FormLabel>
         {/* PDF UPLOAD File */}
         <input
-        type="file"
-        id="technology"
-        name="technology"
-        accept=".pdf" 
-        onChange={handleFileUpload} 
-      />
+  type="file"
+  id="business-model"
+  name="businessModel"
+  accept=".pdf"
+  onChange={(e) => setSelectedFile(e.target.files[0])}
+  />
+        <button type="button" onClick={upload}>upload</button>
+
+
 
       </FormControl>
     </>
@@ -604,6 +676,34 @@ const handleFileUpload = (event) => {
 
   console.log(fileUploaded);
 }
+const upload = () => {
+  const formData = new FormData();
+  formData.append('technology', selectedFile); // Append the selected file
+  // formData.append('step1', JSON.stringify(formData.step1));
+  // formData.append('step2', JSON.stringify(formData.step2));
+  // formData.append('step3', JSON.stringify(formData.step3));
+  // formData.append('step4', JSON.stringify(formData.step4));
+  // formData.append('step5', JSON.stringify(formData.step5));
+
+  axios
+    .post('http://localhost:3000/uploads', formData)
+    .then((response) => {
+      if (response.data && typeof response.data === 'object') {
+        const transformedData = {
+          // companyName: response.data.companyName,
+        };
+
+        // console.log('Transformed Data:', transformedData);
+
+        
+      } else {
+        console.error('Error: Response data structure is not as expected');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
   return (
     <>
       <FormControl mt="2%">
@@ -645,8 +745,9 @@ const handleFileUpload = (event) => {
         id="technology"
         name="technology"
         accept=".pdf" 
-        onChange={handleFileUpload} 
+        onChange={(e) => setSelectedFile(e.target.files[0])}
       />
+      <button type="button" onClick={upload}>upload</button>
       </FormControl>
 
     </>

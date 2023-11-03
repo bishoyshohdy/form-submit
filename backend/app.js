@@ -31,12 +31,14 @@ const userRoutes = require('./src/Routes/UserRoutes');
 const multer = require('multer');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, 'uploads/'); // Uploads will be stored in the 'uploads' directory
+      return cb(null, './docs'); 
   },
   filename: function (req, file, cb) {
-      cb(null, Date.now() + file.originalname); // File name will be a timestamp and the original name
+      return cb(null, `${Date.now()}_${file.originalname}`); 
   }
 });
+
+
 const upload = multer({ storage: storage });
 
 const app = express(); // Define 'app' as an instance of Express
@@ -57,6 +59,14 @@ app.use(cors(corsOptions)); // Now 'app' is defined and can use 'cors' middlewar
 
 app.use(express.json());
 app.use('/users', userRoutes);
+app.post('/uploads', upload.fields([{ name: 'technology', maxCount: 1 }, { name: 'businessModel', maxCount: 1 }]), (req, res) => {
+  console.log(req.body);
+  console.log(req.files);
+
+  // Your file handling logic here
+});
+
+
 
 
 // MongoDB Configuration

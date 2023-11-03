@@ -41,8 +41,7 @@ const UserSchema = new mongoose.Schema({
         // required: true,
       },
       businessModel: {
-        type: Buffer,
-        contentType:String
+        businessModel:String
 
         // required: true,
       },
@@ -89,6 +88,7 @@ const UserSchema = new mongoose.Schema({
           type: String,
         },
         technology:{
+          technology: String,
           filename: String,
           filePath: String, 
           uploadedAt: { type: Date, default: Date.now
