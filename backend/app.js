@@ -41,7 +41,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const app = express(); // Define 'app' as an instance of Express
+const app = express(); 
 
 const allowedOrigins = ['http://localhost:3001'];
 
@@ -55,16 +55,72 @@ const corsOptions = {
   },
 };
 
-app.use(cors(corsOptions)); // Now 'app' is defined and can use 'cors' middleware
+app.use(cors(corsOptions)); 
 
 app.use(express.json());
 app.use('/users', userRoutes);
-app.post('/uploads', upload.fields([{ name: 'technology', maxCount: 1 }, { name: 'businessModel', maxCount: 1 }]), (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
+// app.post('/uploads', upload.fields([{ name: 'technology', maxCount: 1 }, { name: 'businessModel', maxCount: 1 }]), (req, res) => {
+//   // console.log(req.body);
+//   console.log(req.files);
+//   const technologyFile = req.files['technology'];
+//   // const businessModelFile = req.files['businessModel'][0];
 
-  // Your file handling logic here
+//   const technologyObject = {
+//     technology: "Your technology description", // You can set this as needed
+//     filename: technologyFile.filename,
+//     filePath: `/docs/${technologyFile.filename}`,
+//     uploadedAt: new Date(),
+//   };
+
+//   const user = {
+//     step5: [technologyObject], // You can append it to the existing "step5" array
+//   };
+
+//   // Save the user object to your MongoDB collection
+
+//   // Return a response to the frontend
+//   res.json(technologyObject); // You can adjust the response as needed
+// });
+
+app.post('/users', async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    const savedUser = await newUser.save();
+    res.status(201).json(savedUser);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
+
+app.post('/uploads', upload.fields([{ name: 'technology', maxCount: 1 }, { name: 'businessModel', maxCount: 1 }]), (req, res) => {
+  console.log(req.files);
+  const technologyFile = req.files['technology'];
+
+  const technologyObject = {
+    technology: {
+      name: technologyFile.name,
+      lastModified: technologyFile.lastModified,
+      lastModifiedDate: technologyFile.lastModifiedDate,
+      size: technologyFile.size,
+      type: technologyFile.type,
+      webkitRelativePath: technologyFile.webkitRelativePath,
+    },
+    filename: technologyFile.filename,
+    filePath: `/docs/${technologyFile.filename}`,
+    uploadedAt: new Date(),
+  };
+
+  const User = {
+    step5: [technologyObject], 
+  };
+
+  res.json(technologyObject); 
+});
+
+
+
+
+
 
 
 

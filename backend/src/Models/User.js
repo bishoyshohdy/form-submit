@@ -88,11 +88,8 @@ const UserSchema = new mongoose.Schema({
           type: String,
         },
         technology:{
-          technology: String,
-          filename: String,
-          filePath: String, 
-          uploadedAt: { type: Date, default: Date.now
-        },
+          type: String,
+          
         },
       }
   ],

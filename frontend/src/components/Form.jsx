@@ -531,12 +531,7 @@ const Form2 = ({ data, onChange }) => {
   }
   const upload = () => {
     const formData = new FormData();
-    formData.append('businessModel', selectedFile); // Append the selected file
-    // formData.append('step1', JSON.stringify(formData.step1));
-    // formData.append('step2', JSON.stringify(formData.step2));
-    // formData.append('step3', JSON.stringify(formData.step3));
-    // formData.append('step4', JSON.stringify(formData.step4));
-    // formData.append('step5', JSON.stringify(formData.step5));
+    formData.append('businessModel', selectedFile); 
   
     axios
       .post('http://localhost:3000/uploads', formData)
@@ -669,6 +664,7 @@ const Form4 = ({ data, onChange }) => {
 
 const Form5 = ({ data, onChange }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
 
 const handleFileUpload = (event) => {
   const fileUploaded = event.target.files[0];
@@ -677,13 +673,9 @@ const handleFileUpload = (event) => {
   console.log(fileUploaded);
 }
 const upload = () => {
+  setIsClicked(true);
   const formData = new FormData();
-  formData.append('technology', selectedFile); // Append the selected file
-  // formData.append('step1', JSON.stringify(formData.step1));
-  // formData.append('step2', JSON.stringify(formData.step2));
-  // formData.append('step3', JSON.stringify(formData.step3));
-  // formData.append('step4', JSON.stringify(formData.step4));
-  // formData.append('step5', JSON.stringify(formData.step5));
+  formData.append('technology', selectedFile); 
 
   axios
     .post('http://localhost:3000/uploads', formData)
@@ -739,16 +731,21 @@ const upload = () => {
       <FormControl mt="2%">
       <FormLabel htmlFor="technology" fontWeight={'normal'}>
         Miscellaneous Documents (if any)
+        
       </FormLabel>
       <input
         type="file"
         id="technology"
         name="technology"
         accept=".pdf" 
-        onChange={(e) => setSelectedFile(e.target.files[0])}
+        onChange={handleFileUpload}
       />
-      <button type="button" onClick={upload}>upload</button>
+
       </FormControl>
+      <Button w="5rem" h="1.75rem" colorScheme='blue' variant='outline' type="button" onClick={upload} mt={4}
+      color={isClicked ? "green" : "blue.500"}
+      >{isClicked? "Uploaded": "Upload"}</Button>
+
 
     </>
   );
