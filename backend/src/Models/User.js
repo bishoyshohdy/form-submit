@@ -2,8 +2,7 @@ const { Int32 } = require('mongodb');
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  step1: [
-    {
+
       companyName: {
         type: String,
         // required: true,
@@ -24,10 +23,6 @@ const UserSchema = new mongoose.Schema({
         type: [String],
         // required: true,
       },
-    },
-  ],
-  step2: [
-    {
       problem: {
         type: String,
         // required: true,
@@ -41,23 +36,14 @@ const UserSchema = new mongoose.Schema({
         // required: true,
       },
       businessModel: {
-        businessModel:String
-
+        data: Buffer,
+        contentType: String,
         // required: true,
       },
-    },
-  ],
-  step3: [
-    {
       stageOfDevelopment: {
         type: String,
         // required: true,
       },
-    },
-  ],
-  step4: [
-    {
-      
       businessPlanLink: {
         type: String,
       },
@@ -74,10 +60,6 @@ const UserSchema = new mongoose.Schema({
       competitiveLandscapeDescription: {
         type: String,
       },
-    },
-  ],
-    step5: [
-      {
         website: {
           type: String,
         },
@@ -88,11 +70,10 @@ const UserSchema = new mongoose.Schema({
           type: String,
         },
         technology:{
-          type: String,
-          
+          data: Buffer,
+          contentType: String,
         },
-      }
-  ],
+
 });
 
 module.exports = mongoose.model('User', UserSchema);

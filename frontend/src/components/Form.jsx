@@ -1,6 +1,7 @@
 import React, { useState, useEffect  } from 'react';
 import axios from 'axios';
 
+
 import {
   Box,
   ButtonGroup,
@@ -38,6 +39,7 @@ const handleFileUpload = (event) => {
 
 function ApplicationForm()  {
   const [selectedFile, setSelectedFile] = useState(null); // Define selectedFile state here
+  const [resp, setResp] = useState(null);
 
   const handleFileUpload = (event) => {
     const fileUploaded = event.target.files[0];
@@ -51,14 +53,16 @@ function ApplicationForm()  {
       companyName: '',
       companyDescription: '',
       teamMembers: 1,
-      teamMemberNames: [''],
-      teamMemberRoles: [''],
+      teamMembersList: [{
+        teamMemberNames: '',
+        teamMemberRoles: '',
+      }],
     },
     step2: {
       problem: '',
       solution: '',
       targetMarket: '',
-      businessModel: '',
+      businessModel: null,
     },
     step3: {
       stageOfDevelopment: '',
@@ -73,94 +77,151 @@ function ApplicationForm()  {
       website: '',
       socialMediaLinks: '',
       videoPitchLink: '',
-      technology:'',
+      technology:null,
     },
 
   });
 
 
 
-const handleNextStep = () => {
-    setActiveStep(activeStep + 1);
-};
+  
+  const handleNextStep = () => {
+    // Perform input validation here
+    if (validateInputs()) {
+      setActiveStep(activeStep + 1);
+    } else {
+      // Display an error message or take appropriate action
+      console.log('Please fill in all required fields before proceeding.');
+    }
+  };
 
 
-const loadPreviousStepData = () => {
+const validateInputs = () => {
+  // Implement your validation logic here
+  // For example, check if all required fields in the current step are filled
 
-  if (activeStep === 2) {
-    
+  if (activeStep === 0) {
     const { companyName, companyDescription, teamMembers } = formData.step1;
-    setFormData({
-      ...formData,
-      step1: {
-        companyName,
-        companyDescription,
-        teamMembers,
-      },
-    });
-    console.log(formData);
-  } else if (activeStep === 3) {
+    return companyName && companyDescription && teamMembers;
+  } else if (activeStep === 1) {
     const { problem, solution, targetMarket, businessModel } = formData.step2;
-    setFormData({
-      ...formData,
-      step2: {
-        problem,
-        solution,
-        targetMarket,
-        businessModel,
-      },
-    });
-  } else if (activeStep === 4) {
+    return problem && solution && targetMarket && businessModel;
+  } else if (activeStep === 2) {
     const { stageOfDevelopment } = formData.step3;
-    setFormData({
-      ...formData,
-      step3: {
-        stageOfDevelopment,
-      },
-    });
-  } else if (activeStep === 5) {
-    const {
-      pitchDeckLink,
-      businessPlanLink,
-      intellectualPropertyDescription,
-      competitiveLandscapeDescription,
-    } = formData.step4;
-    setFormData({
-      ...formData,
-      step4: {
-        pitchDeckLink,
-        businessPlanLink,
-        intellectualPropertyDescription,
-        competitiveLandscapeDescription,
-      },
-    });
-  } else if (activeStep === 6) {
-    const { website, socialMediaLinks, videoPitchLink, technology } = formData.step5;
-    setFormData({
-      ...formData,
-      step5: {
-        website,
-        socialMediaLinks,
-        videoPitchLink,
-        technology,
-      },
-    });
+    return stageOfDevelopment;
   }
 
+  // Add additional conditions based on your form structure
+  return true; // Default to true if no specific conditions are met
 };
+
+
+// const loadPreviousStepData = () => {
+
+//   if (activeStep === 2) {
+    
+//     const { companyName, companyDescription, teamMembers } = formData.step1;
+//     setFormData({
+//       ...formData,
+//       step1: {
+//         companyName,
+//         companyDescription,
+//         teamMembers,
+//       },
+//     });
+//     console.log(formData);
+//   } else if (activeStep === 3) {
+//     const { problem, solution, targetMarket, businessModel } = formData.step2;
+//     setFormData({
+//       ...formData,
+//       step2: {
+//         problem,
+//         solution,
+//         targetMarket,
+//         businessModel,
+//       },
+//     });
+//   } else if (activeStep === 4) {
+//     const { stageOfDevelopment } = formData.step3;
+//     setFormData({
+//       ...formData,
+//       step3: {
+//         stageOfDevelopment,
+//       },
+//     });
+//   } else if (activeStep === 5) {
+//     const {
+//       pitchDeckLink,
+//       businessPlanLink,
+//       intellectualPropertyDescription,
+//       competitiveLandscapeDescription,
+//     } = formData.step4;
+//     setFormData({
+//       ...formData,
+//       step4: {
+//         pitchDeckLink,
+//         businessPlanLink,
+//         intellectualPropertyDescription,
+//         competitiveLandscapeDescription,
+//       },
+//     });
+//   } else if (activeStep === 6) {
+//     const { website, socialMediaLinks, videoPitchLink, technology } = formData.step5;
+//     setFormData({
+//       ...formData,
+//       step5: {
+//         website,
+//         socialMediaLinks,
+//         videoPitchLink,
+//         technology,
+//       },
+//     });
+//   }
+
+// };
+
+
 
 
 const handleBackStep = () => {
   if (activeStep > 0) {
-    loadPreviousStepData(); 
+    // loadPreviousStepData(); 
     setActiveStep(activeStep - 1); 
   }
 };
 
 
+
+
+
+
 const handleSubmit = () => {
-  axios.post('http://localhost:3000/users', formData)
+
+  const formDataK = new FormData();
+  formDataK.append('companyName', formData.step1.companyName);
+  formDataK.append('companyDescription', formData.step1.companyDescription);
+  formDataK.append('teamMembers', formData.step1.teamMembers);
+  formDataK.append('teamMemberNames', formData.step1.teamMemberNames);
+  formDataK.append('teamMemberRoles', formData.step1.teamMemberRoles);
+  formDataK.append('problem', formData.step2.problem);
+  formDataK.append('solution', formData.step2.solution);
+  formDataK.append('targetMarket', formData.step2.targetMarket);
+  formDataK.append('businessModel', formData.step2.businessModel);
+  formDataK.append('stageOfDevelopment', formData.step3.stageOfDevelopment);
+  formDataK.append('pitchDeckLink', formData.step4.pitchDeckLink);
+  formDataK.append('businessPlanLink', formData.step4.businessPlanLink);
+  formDataK.append('intellectualPropertyDescription', formData.step4.intellectualPropertyDescription);
+  formDataK.append('competitiveLandscapeDescription', formData.step4.competitiveLandscapeDescription);
+  formDataK.append('website', formData.step5.website);
+  formDataK.append('socialMediaLinks', formData.step5.socialMediaLinks);
+  formDataK.append('videoPitchLink', formData.step5.videoPitchLink);
+  formDataK.append('technology', formData.step5.technology);
+
+  console.log(formData);
+  axios.post('http://localhost:3000/users', formDataK)
   .then(response => {
+    setResp(response.data);
+    console.log("res", response);
     if (response.data && typeof response.data === 'object') {
       const transformedData = {
         // companyName: response.data.companyName,
@@ -187,105 +248,20 @@ const handleSubmit = () => {
 
 };
 
-
-// const handleSubmit = () => {
-//   const formData = new FormData();
-//   // formData.append('technology', selectedFile);
-//   formData.append('step1', JSON.stringify(formData.step1));
-//   formData.append('step2', JSON.stringify(formData.step2));
-//   formData.append('step3', JSON.stringify(formData.step3));
-//   formData.append('step4', JSON.stringify(formData.step4));
-//   formData.append('step5', JSON.stringify(formData.step5));
-
-//   axios
-//     .post('http://localhost:3000/users', formData)
-//     .then((response) => {
-//       if (response.data && typeof response.data === 'object') {
-//         const transformedData = {
-//           // companyName: response.data.companyName,
-//         };
-
-//         // console.log('Transformed Data:', transformedData);
-
-//         toast({
-//           title: 'Application submitted.',
-//           description: 'Your application has been submitted successfully.',
-//           status: 'success',
-//           duration: 3000,
-//           isClosable: true,
-//         });
-//       } else {
-//         console.error('Error: Response data structure is not as expected');
-//       }
-//     })
-//     .catch((error) => {
-//       console.error('Error:', error);
-//     });
-// };
-
-
-
-
-
-// const handleSubmit = () => {
-//   const formData = new FormData();
-//   formData.append('businessModel', selectedFile); 
-//   formData.append('technology', selectedFile); 
-
-
-//   formData.append('step1', JSON.stringify(formData.step1));
-//   formData.append('step2', JSON.stringify(formData.step2));
-//   formData.append('step3', JSON.stringify(formData.step3));
-//   formData.append('step4', JSON.stringify(formData.step4));
-//   formData.append('step5', JSON.stringify(formData.step5));
-
-//   axios
-//     .post('http://localhost:3000/users', formData)
-//     .then((response) => {
-//       if (response.data && typeof response.data === 'object') {
-//         const transformedData = {
-//           // companyName: response.data.companyName,
-//         };
-
-//         // console.log('Transformed Data:', transformedData);
-
-
-//         toast({
-//           title: 'Application submitted.',
-//           description: 'Your application has been submitted successfully.',
-//           status: 'success',
-//           duration: 3000,
-//           isClosable: true,
-//         });
-//       } else {
-//         console.error('Error: Response data structure is not as expected');
-//       }
-//     })
-//     .catch((error) => {
-//       console.error('Error:', error);
-//     });
-// };
-
-
-
 const handleFormChange = (step, field, value, index) => {
   setFormData((prevData) => {
-    if (field === 'teamMemberNames' || field === 'teamMemberRoles') {
-      const updatedStep = prevData[step].map((item, i) => {
-        if (i === index) {
-          return {
-            ...item,
-            [field]: value,
-          };
-        }
-        return item;
-      });
+    if ((field === 'teamMemberNames' || field === 'teamMemberRoles' ) ) {
+      // let updatedTeamMembers = [...prevData[step].teamMembersList];
 
       return {
-        ...prevData,
-        [step]: updatedStep,
+        // ...prevData,
+        // [step]: {
+        //   ...prevData[step],
+        //   teamMembers: updatedTeamMembers,
+        // },
       };
     } else {
+
       return {
         ...prevData,
         [step]: {
@@ -293,6 +269,7 @@ const handleFormChange = (step, field, value, index) => {
           [field]: value,
         },
       };
+      
     }
   });
 };
@@ -399,19 +376,19 @@ const handleFormChange = (step, field, value, index) => {
       <ButtonGroup mt="5%" w="100%" >
         <Flex w="100%" justifyContent="space-between">
           <Flex>
-            <Button
+            {/* <Button
               onClick={handleBackStep}
               isDisabled={activeStep === 0}
               colorScheme="blue"
-              variant="solid"
+              variant="ghost"
               w="7rem"
               mr="5%"
             >
               Back
-            </Button>
+            </Button> */}
             <Button
               w="7rem"
-              isDisabled={activeStep === 4}
+              isDisabled={!validateInputs() || activeStep === 4}
               onClick={handleNextStep}
               colorScheme="blue"
               variant="outline"
@@ -422,18 +399,16 @@ const handleFormChange = (step, field, value, index) => {
           {activeStep === 4 ? (
             <Button
               w="7rem"
-              colorScheme="red"
+              colorScheme="blue"
               variant="solid"
               onClick={handleSubmit}
-              // isDisabled={activeStep !== 5}
+              isDisabled={!validateInputs()}
             >
               Submit
             </Button>
           ) : null}
         </Flex>
       </ButtonGroup>
-
-      
 
     </Box>
   );
@@ -457,10 +432,16 @@ const Form1 = ({ data, onChange }) => {
           <Input
             placeholder={`Team Member Name`}
             id={`team-member-name-${i}`}
+            onChange={(e) =>
+              onChange('teamMemberNames', e.target.value, i)
+            }
           />
           <Input
             placeholder={`Team Member Role`}
             id={`team-member-role-${i}`}
+            onChange={(e) =>
+              onChange('teamMemberRoles', e.target.value, i)
+            }
           />
         </HStack>
     );
@@ -497,7 +478,7 @@ const Form1 = ({ data, onChange }) => {
           onChange={(e) => onChange('companyDescription', e.target.value)}
         />
       </FormControl>
-      <FormControl mt="2%">
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="team-members" fontWeight={'normal'}>
           Number of Team Members
         </FormLabel>
@@ -536,6 +517,7 @@ const Form2 = ({ data, onChange }) => {
     axios
       .post('http://localhost:3000/uploads', formData)
       .then((response) => {
+        id:
         console.log(response)
       })
       .catch((error) => {
@@ -545,7 +527,7 @@ const Form2 = ({ data, onChange }) => {
 
   return (
     <>
-      <FormControl mt="2%">
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="problem" fontWeight={'normal'}>
           Problem Your Company Solves
         </FormLabel>
@@ -555,7 +537,7 @@ const Form2 = ({ data, onChange }) => {
           onChange={(e) => onChange('problem', e.target.value)}
         />
       </FormControl>
-      <FormControl mt="2%">
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="solution" fontWeight={'normal'}>
           Solution Your Company Provides
         </FormLabel>
@@ -565,7 +547,7 @@ const Form2 = ({ data, onChange }) => {
           onChange={(e) => onChange('solution', e.target.value)}
         />
       </FormControl>
-      <FormControl mt="2%">
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="target-market" fontWeight={'normal'}>
           Target Market
         </FormLabel>
@@ -575,7 +557,7 @@ const Form2 = ({ data, onChange }) => {
           onChange={(e) => onChange('targetMarket', e.target.value)}
         />
       </FormControl>
-      <FormControl mt="2%">
+      <FormControl isRequired mt="2%">
         <FormLabel htmlFor="business-model" fontWeight={'normal'}>
           Business Model
         </FormLabel>
@@ -585,12 +567,11 @@ const Form2 = ({ data, onChange }) => {
   id="business-model"
   name="businessModel"
   accept=".pdf"
-  onChange={(e) => setSelectedFile(e.target.files[0])}
-  />
-        <button type="button" onClick={upload}>upload</button>
-
-
-
+  onChange={(e) => {
+    // handleFileUpload(e);
+    onChange('businessModel', e.target.files[0]);
+  }}  />
+        
       </FormControl>
     </>
   );
@@ -599,7 +580,7 @@ const Form2 = ({ data, onChange }) => {
 const Form3 = ({ data, onChange }) => {
   return (
     <>
-    <FormControl>
+    <FormControl isRequired>
         <FormLabel htmlFor="stage-of-development" fontWeight={'normal'}>
           Stage of Development
         </FormLabel>
@@ -669,23 +650,25 @@ const Form5 = ({ data, onChange }) => {
 const handleFileUpload = (event) => {
   const fileUploaded = event.target.files[0];
   setSelectedFile(fileUploaded);
-
+  
   console.log(fileUploaded);
 }
 const upload = () => {
   setIsClicked(true);
-  const formData = new FormData();
+  let formData = new FormData();
   formData.append('technology', selectedFile); 
-
+  // formData = {...formData, technology: selectedFile}
+  console.log("on up", formData);
+  
   axios
     .post('http://localhost:3000/uploads', formData)
     .then((response) => {
+      
       if (response.data && typeof response.data === 'object') {
         const transformedData = {
           // companyName: response.data.companyName,
         };
 
-        // console.log('Transformed Data:', transformedData);
 
         
       } else {
@@ -738,13 +721,15 @@ const upload = () => {
         id="technology"
         name="technology"
         accept=".pdf" 
-        onChange={handleFileUpload}
+        onChange={(e) => {
+          onChange('technology', e.target.files[0]);
+        }}
+
+        
       />
 
       </FormControl>
-      <Button w="5rem" h="1.75rem" colorScheme='blue' variant='outline' type="button" onClick={upload} mt={4}
-      color={isClicked ? "green" : "blue.500"}
-      >{isClicked? "Uploaded": "Upload"}</Button>
+      
 
 
     </>
