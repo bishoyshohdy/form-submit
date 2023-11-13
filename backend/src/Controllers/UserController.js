@@ -7,13 +7,12 @@ exports.createUser = async (req, res) => {
   try {
     const technology = req.files.technology ? req.files.technology[0] : null;
     const businessModel = req.files.businessModel ? req.files.businessModel[0] : null;
+    const teamMembersListPar = JSON.parse(req.body.teamMembersList);
 
     const newUser = await User.create({    
       companyName: req.body.companyName,
       companyDescription: req.body.companyDescription,
-      teamMembers: req.body.teamMembers,
-      teamMemberNames: req.body.teamMemberNames,
-      teamMemberRoles: req.body.teamMemberRoles,
+      teamMembers: teamMembersListPar,
       problem: req.body.problem,
       solution: req.body.solution,
       targetMarket: req.body.targetMarket,

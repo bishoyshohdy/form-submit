@@ -11,18 +11,16 @@ const UserSchema = new mongoose.Schema({
         type: String,
         // required: true,
       },
-      teamMembers: {
-        type: Number,
-        // required: true,
-      },
-      teamMemberNames: {
-        type: [String],
-        // required: true,
-      },
-      teamMemberRoles: {
-        type: [String],
-        // required: true,
-      },
+      teamMembers: [
+        {
+          teamMemberNames: {
+            type: String,
+          },
+          teamMemberRoles: {
+            type: String,
+          },
+        },
+      ],
       problem: {
         type: String,
         // required: true,

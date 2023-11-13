@@ -22,6 +22,8 @@ import {
   StepTitle,
   Stepper,
   useSteps,
+  Text,
+  Stack,
 } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 
@@ -52,7 +54,6 @@ function ApplicationForm()  {
     step1: {
       companyName: '',
       companyDescription: '',
-      teamMembers: 1,
       teamMembersList: [{
         teamMemberNames: '',
         teamMemberRoles: '',
@@ -82,8 +83,11 @@ function ApplicationForm()  {
 
   });
 
-
-
+  // use effect to print the input list
+  useEffect(()=>{
+     console.log(formData);
+  }
+  ,[formData]);
   
   const handleNextStep = () => {
     // Perform input validation here
@@ -101,8 +105,8 @@ const validateInputs = () => {
   // For example, check if all required fields in the current step are filled
 
   if (activeStep === 0) {
-    const { companyName, companyDescription, teamMembers } = formData.step1;
-    return companyName && companyDescription && teamMembers;
+    const { companyName, companyDescription, teamMembersList } = formData.step1;
+    return companyName && companyDescription && teamMembersList.length > 0 && teamMembersList[0].teamMemberNames && teamMembersList[0].teamMemberRoles;
   } else if (activeStep === 1) {
     const { problem, solution, targetMarket, businessModel } = formData.step2;
     return problem && solution && targetMarket && businessModel;
@@ -114,73 +118,6 @@ const validateInputs = () => {
   // Add additional conditions based on your form structure
   return true; // Default to true if no specific conditions are met
 };
-
-
-// const loadPreviousStepData = () => {
-
-//   if (activeStep === 2) {
-    
-//     const { companyName, companyDescription, teamMembers } = formData.step1;
-//     setFormData({
-//       ...formData,
-//       step1: {
-//         companyName,
-//         companyDescription,
-//         teamMembers,
-//       },
-//     });
-//     console.log(formData);
-//   } else if (activeStep === 3) {
-//     const { problem, solution, targetMarket, businessModel } = formData.step2;
-//     setFormData({
-//       ...formData,
-//       step2: {
-//         problem,
-//         solution,
-//         targetMarket,
-//         businessModel,
-//       },
-//     });
-//   } else if (activeStep === 4) {
-//     const { stageOfDevelopment } = formData.step3;
-//     setFormData({
-//       ...formData,
-//       step3: {
-//         stageOfDevelopment,
-//       },
-//     });
-//   } else if (activeStep === 5) {
-//     const {
-//       pitchDeckLink,
-//       businessPlanLink,
-//       intellectualPropertyDescription,
-//       competitiveLandscapeDescription,
-//     } = formData.step4;
-//     setFormData({
-//       ...formData,
-//       step4: {
-//         pitchDeckLink,
-//         businessPlanLink,
-//         intellectualPropertyDescription,
-//         competitiveLandscapeDescription,
-//       },
-//     });
-//   } else if (activeStep === 6) {
-//     const { website, socialMediaLinks, videoPitchLink, technology } = formData.step5;
-//     setFormData({
-//       ...formData,
-//       step5: {
-//         website,
-//         socialMediaLinks,
-//         videoPitchLink,
-//         technology,
-//       },
-//     });
-//   }
-
-// };
-
-
 
 
 const handleBackStep = () => {
@@ -200,9 +137,7 @@ const handleSubmit = () => {
   const formDataK = new FormData();
   formDataK.append('companyName', formData.step1.companyName);
   formDataK.append('companyDescription', formData.step1.companyDescription);
-  formDataK.append('teamMembers', formData.step1.teamMembers);
-  formDataK.append('teamMemberNames', formData.step1.teamMemberNames);
-  formDataK.append('teamMemberRoles', formData.step1.teamMemberRoles);
+  formDataK.append('teamMembersList', JSON.stringify(formData.step1.teamMembersList));
   formDataK.append('problem', formData.step2.problem);
   formDataK.append('solution', formData.step2.solution);
   formDataK.append('targetMarket', formData.step2.targetMarket);
@@ -250,17 +185,6 @@ const handleSubmit = () => {
 
 const handleFormChange = (step, field, value, index) => {
   setFormData((prevData) => {
-    if ((field === 'teamMemberNames' || field === 'teamMemberRoles' ) ) {
-      // let updatedTeamMembers = [...prevData[step].teamMembersList];
-
-      return {
-        // ...prevData,
-        // [step]: {
-        //   ...prevData[step],
-        //   teamMembers: updatedTeamMembers,
-        // },
-      };
-    } else {
 
       return {
         ...prevData,
@@ -270,7 +194,6 @@ const handleFormChange = (step, field, value, index) => {
         },
       };
       
-    }
   });
 };
 
@@ -415,46 +338,28 @@ const handleFormChange = (step, field, value, index) => {
 };
 
 const Form1 = ({ data, onChange }) => {
-  const incrementTeamMembers = () => {
-    onChange('teamMembers', data.teamMembers + 1);
-  };
+  const [inputList, setinputList]= useState([{teamMemberNames:'', teamMemberRoles:''}]);
 
-  const decrementTeamMembers = () => {
-    if (data.teamMembers > 1) {
-      onChange('teamMembers', data.teamMembers - 1);
-    }
-  };
 
-  const teamMemberInputs = [];
-  for (let i = 0; i < data.teamMembers; i++) {
-    teamMemberInputs.push(
-        <HStack key={i} spacing={4} my={3}>
-          <Input
-            placeholder={`Team Member Name`}
-            id={`team-member-name-${i}`}
-            onChange={(e) =>
-              onChange('teamMemberNames', e.target.value, i)
-            }
-          />
-          <Input
-            placeholder={`Team Member Role`}
-            id={`team-member-role-${i}`}
-            onChange={(e) =>
-              onChange('teamMemberRoles', e.target.value, i)
-            }
-          />
-        </HStack>
-    );
+  const handleinputchange=(e, index)=>{
+    const {name, value}= e.target;
+    const list= [...inputList];
+    list[index][name]= value;
+    setinputList(list);
+    onChange('teamMembersList', list);
   }
-//   const [selectedFile, setSelectedFile] = useState(null);
+ 
+  const handleremove= index=>{
+    const list=[...inputList];
+    list.splice(index,1);
+    setinputList(list);
+    onChange('teamMembersList', list);
 
-// const handleFileUpload = (event) => {
-//   const fileUploaded = event.target.files[0];
-//   setSelectedFile(fileUploaded);
-  
+  }
 
-//   console.log(fileUploaded);
-// }
+  const handleaddclick=()=>{ 
+    setinputList([...inputList, { teamMemberNames:'', teamMemberRoles:''}]);
+  }
 
   return (
     <>
@@ -479,26 +384,33 @@ const Form1 = ({ data, onChange }) => {
         />
       </FormControl>
       <FormControl isRequired mt="2%">
-        <FormLabel htmlFor="team-members" fontWeight={'normal'}>
-          Number of Team Members
-        </FormLabel>
-        <HStack spacing={4}>
-          <Button onClick={decrementTeamMembers}>-</Button>
-          <Input
-            w="5rem"
-            id="team-members"
-            value={data.teamMembers}
-            textAlign="center"
-            readOnly
-          />
-          <Button onClick={incrementTeamMembers}>+</Button>
-        </HStack>
+      { 
+            inputList.map( (x,i)=>{
+              return(
+                <>
+              <FormLabel htmlFor="team-members" fontWeight={'normal'}>
+              Team Member {i+1}
+              </FormLabel>
+              <HStack>
+                <Input w={'35%'} type="text"  name="teamMemberNames" class="form-control"  placeholder="Enter First Name" onChange={ e=>handleinputchange(e,i)} />
+                <Input w={'35%'} type="text"  name="teamMemberRoles" class="form-control"   placeholder="Enter Last Name" onChange={ e=>handleinputchange(e,i) }/>
+                {
+                  inputList.length!==1 && inputList.length-1===i &&
+                  <Button  onClick={()=> handleremove(i)}>Remove</Button>
+                }
+               { inputList.length-1===i &&
+                  <Button  onClick={ handleaddclick}>Add More</Button>
+               }
+               </HStack>
+               </>
+              );
+             } )
+        } 
       </FormControl>
-      {teamMemberInputs}
+
     </>
   );
 };
-
 
 
 const Form2 = ({ data, onChange }) => {
