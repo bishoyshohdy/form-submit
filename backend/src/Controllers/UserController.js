@@ -24,10 +24,8 @@ exports.createUser = async (req, res) => {
       website: req.body.website,
       socialMediaLinks: req.body.socialMediaLinks,
       videoPitchLink: req.body.videoPitchLink,
-      technology: {
-        data: technology.buffer,
-        contentType: technology.mimetype,
-      },
+      ...(technology && { technology: { data: technology.buffer, contentType: technology.mimetype } }),
+
       businessModel: {
         data: businessModel.buffer,
         contentType: businessModel.mimetype,

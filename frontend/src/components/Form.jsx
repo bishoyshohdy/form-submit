@@ -150,8 +150,13 @@ const handleSubmit = () => {
   formDataK.append('website', formData.step5.website);
   formDataK.append('socialMediaLinks', formData.step5.socialMediaLinks);
   formDataK.append('videoPitchLink', formData.step5.videoPitchLink);
-  formDataK.append('technology', formData.step5.technology);
-
+  if (formData.step5.technology) {
+    formDataK.append('technology', formData.step5.technology);
+    console.log("tech", formData.step5.technology);
+  }
+  else {
+    formDataK.append('technology', null);
+  }
   console.log(formData);
   axios.post('http://localhost:3000/users', formDataK)
   .then(response => {
