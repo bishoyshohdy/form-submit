@@ -80,6 +80,9 @@ function ApplicationForm()  {
       videoPitchLink: '',
       technology:null,
     },
+    step6:{
+      data: 'You have Successfully submitted the form , expect a reply from us within 2 weeks'
+    }
 
   });
 
@@ -131,9 +134,8 @@ const handleBackStep = () => {
 
 
 
-
 const handleSubmit = () => {
-
+  setActiveStep(activeStep + 1);
   const formDataK = new FormData();
   formDataK.append('companyName', formData.step1.companyName);
   formDataK.append('companyDescription', formData.step1.companyDescription);
@@ -215,11 +217,12 @@ const handleFormChange = (step, field, value, index) => {
   { title: 'Third', description: 'Development Stage' },
   { title: 'Fourth', description: 'Business Plan' },
   { title: 'Fifth', description: 'Miscellaneous' },
+  {title :'Sixth', description:'Submission Completed'}
 ]
 
    const { activeStep, setActiveStep  } = useSteps({
     initialStep: 0,
-    steps: 4,
+    steps: 5,
   });
 
   return (
@@ -244,11 +247,17 @@ const handleFormChange = (step, field, value, index) => {
           {steps.map((step, index) => (
             <Step key={index}>
               <StepIndicator>
-                <StepStatus
+               {activeStep!==5? <StepStatus
                   complete={<StepIcon />}
-                  incomplete={<StepNumber />}
+                   incomplete={<StepNumber />}
                   active={<StepNumber />}
-                />
+                /> :
+                <StepStatus
+                complete={<StepIcon />}
+                incomplete={<StepNumber />}
+                active={<StepNumber />}
+              />}
+  
               </StepIndicator>
 
               <Box flexShrink='0'>
@@ -291,14 +300,22 @@ const handleFormChange = (step, field, value, index) => {
               handleFormChange('step4', field, value)
             }
           />
-        ) : (
+        ) :activeStep ===4? (
           <Form5 
             data={formData.step5}
             onChange={(field, value) =>
               handleFormChange('step5', field, value)
             }
           />
-        )}
+        ): (
+          <Form6 
+            data={formData.step6}
+            onChange={(field, value) =>
+              handleFormChange('step6', field, value)
+            }
+          />
+        )
+      }
       </Box>
 
       <ButtonGroup mt="5%" w="100%" >
@@ -314,15 +331,17 @@ const handleFormChange = (step, field, value, index) => {
             >
               Back
             </Button> */}
-            <Button
+
+        
+          {activeStep !== 5?(   <Button
               w="7rem"
-              isDisabled={!validateInputs() || activeStep === 4}
+              isDisabled={!validateInputs() || activeStep === 5}
               onClick={handleNextStep}
               colorScheme="blue"
               variant="outline"
             >
               Next
-            </Button>
+            </Button>):null}
           </Flex>
           {activeStep === 4 ? (
             <Button
@@ -653,5 +672,13 @@ const upload = () => {
   );
 };
 
+const Form6 = ({ data, onChange }) => {
+  return (
+    <>
+<Text style={{textAlign:"center" , fontSize:24 , fontWeight:'bold'}}>You have successfully submitted the form</Text>
+<Text style={{textAlign:"center" , fontSize:18 , fontWeight:'light' , color:'grey'}}>Excpect a reply from us within 2-3 weeks</Text>
+    </>
+  );
+};
 export default ApplicationForm;
 
